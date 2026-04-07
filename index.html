@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAD News 晨報</title>
+    <title>SAD News</title>
     <!-- 引入 Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -29,58 +29,28 @@
             color: var(--tg-theme-hint-color, #888);
             margin-top: 4px;
         }
-        .news-card {
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--tg-theme-hint-color, #888);
+            font-size: 16px;
+            line-height: 1.6;
             background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .news-card h2 {
-            font-size: 18px;
-            margin: 0 0 8px 0;
-        }
-        .news-card p {
-            font-size: 14px;
-            line-height: 1.5;
-            margin: 0;
-            color: var(--tg-theme-text-color, #333);
-        }
-        .tag {
-            display: inline-block;
-            background-color: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>SAD News 晨報</h1>
+        <h1>SAD News</h1>
         <div class="date" id="dateDisplay">載入中...</div>
     </div>
 
     <div id="newsContainer">
-        <!-- 模擬的新聞內容 -->
-        <div class="news-card">
-            <span class="tag">科技趨勢</span>
-            <h2>OpenAI 發表最新模型技術</h2>
-            <p>最新一代的 AI 模型具備更強的推理能力與多模態整合，將大幅改變未來的工作型態與軟體開發流程。</p>
-        </div>
-
-        <div class="news-card">
-            <span class="tag">泰國娛樂</span>
-            <h2>TayNew 2026 香港見面會籌備中</h2>
-            <p>知名泰星組合 TayNew 將於 2026 年中旬在香港 K11 舉辦粉絲見面會，目前正在進行舞台與預算規劃。</p>
-        </div>
-
-        <div class="news-card">
-            <span class="tag">在地快訊</span>
-            <h2>香港今日天氣預報</h2>
-            <p>今日局部地區有驟雨，氣溫約在 26 至 30 度之間，出門請記得攜帶雨具。</p>
+        <!-- 已經移除所有假新聞，目前為空白狀態等待真實新聞寫入 -->
+        <div class="empty-state">
+            🗞️ 目前尚無新聞資料<br><br>
+            系統已清空所有測試內容，正在等待接入真實、權威的即時新聞來源。
         </div>
     </div>
 

@@ -3,67 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAD News</title>
-    <!-- 引入 Telegram Web App SDK -->
+    <title>SAD News 晨報</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            margin: 0;
-            padding: 16px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            font-size: 24px;
-            margin: 0;
-            color: var(--tg-theme-text-color, #000);
-        }
-        .date {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, #888);
-            margin-top: 4px;
-        }
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
-            color: var(--tg-theme-hint-color, #888);
-            font-size: 16px;
-            line-height: 1.6;
-            background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            border-radius: 12px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--tg-theme-bg-color, #ffffff); color: var(--tg-theme-text-color, #000000); margin: 0; padding: 16px; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 24px; margin: 0; color: var(--tg-theme-text-color, #000); }
+        .date { font-size: 14px; color: var(--tg-theme-hint-color, #888); margin-top: 4px; }
+        .news-card { background-color: var(--tg-theme-secondary-bg-color, #f0f0f0); border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .news-card h2 { font-size: 18px; margin: 0 0 8px 0; line-height: 1.4; }
+        .tag { display: inline-block; background-color: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #ffffff); font-size: 12px; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>SAD News</h1>
+        <h1>SAD News 晨報</h1>
         <div class="date" id="dateDisplay">載入中...</div>
     </div>
-
     <div id="newsContainer">
-        <!-- 已經移除所有假新聞，目前為空白狀態等待真實新聞寫入 -->
-        <div class="empty-state">
-            🗞️ 目前尚無新聞資料<br><br>
-            系統已清空所有測試內容，正在等待接入真實、權威的即時新聞來源。
+        
+        <div class="news-card">
+            <span class="tag">大角咀/香港</span>
+            <h2><a href="https://news.google.com/rss/articles/CBMi8gJBVV95cUxNVm9Vdzk4TW5aVndldVlubTkwMU1SWkhaWE5hUWJLdUNUR3BzWTFUX01lbzRELXhZbWdDVVNxZDZqeXljb0JHdl9DZ3RpdGUyMXBXVFpvOTVLNWdNTjJPaFFHSmVHc29XdVBYTERQNGRmRTdDTmlxTnZOZDVOVzlqZlJWQVFvZ0pXSVZNamhULUpkdVVyNlc4b21pTUk5dUJBOXhzb2hlVGQ2UGU0dTBmMTVoNWNyRUtNWmlDajNMNnlvenUyM1EyS1hCcDBzT1M3amszUzl5V1ptOUJmbGtPTGVYeU9SZko5X1d1bnpOVHlzT251Ym8teUVrWGkyemt6Z3VzMjhid0hoLUV4b0I1WWJzRFlla1cwLWtrTWNXbXhQSEtEZ3ZhU0pWVGltWG5raGRCSGNadl9ZT25rSjdSRHA5aVpmMkhNSVBsUDliNjVIakRrQ0ZURFhlOWpSci1TYTQ2SnY1SzFKV1JpRGcweFBB?oc=5" target="_blank" style="color: inherit; text-decoration: none;">KellyChu - 大角咀夢幻「花之隧道」 魚木驚艷綻放任打卡 | Executive日記 - 星島頭條</a></h2>
         </div>
+    
+
+        <div class="news-card">
+            <span class="tag">大角咀/香港</span>
+            <h2><a href="https://news.google.com/rss/articles/CBMikwNBVV95cUxNOGFaMzFRUkNRa3htdFdnbGV1NWs0NktMRkJpUlhwNUdKMElsaGxwaG5UZWU3V0Q4ekxGcUROT3dIeGdMVDFSdXZNUDFfRUZBVGlDdmU1dW5WVUVBSzhhcDEtQUktN2tpTjR2MUNlUW12d09TWWRsS003RFVtWXNFdW9XT0tPWFFYeHdNbEhIck85aFR4VWZIQXM3c1k0VWxiTnlUZUNXcHBaTUlzXy1ZdG0zdUdPcHRQUlFtaXBqSXQ5QWtoTGFtaUpFYmVuaXRib1h5dWtoX0pTbjhGTlNBNHhaaUtWTEw4VE50TDNhdklmSWRtOW1HTzh0anJIdzdBbkJWSHo3aFJDem0yanRvcW9vQXpLWWtlNW1HUEhaaGw5VkpuTWdZOVFYd0ZVSWh4el9mUW9tZlQwNjJlOWdvc2MwcXFUT051MjUzdjhad0lNeFF4b2QwQjBMRWhybjZfYVBTYnNkMEctLU00dGVoYkwwZTZyVmJKODVCQ25ieTVhYzVIR0xuQk02ak5HWlJvQWlj?oc=5" target="_blank" style="color: inherit; text-decoration: none;">香港新聞連線 - 香港新聞連線</a></h2>
+        </div>
+    
+
+        <div class="news-card">
+            <span class="tag">大角咀/香港</span>
+            <h2><a href="https://news.google.com/rss/articles/CBMiiwFBVV95cUxNQ3VmYlNaai1mbGZvQkY3dExnQlBfaUNtZ05RZk5ZNHU3WEZRZ0tDc3RiRkI4ek9fSllqdGROdHdWaS01MzJBWWVqVjlBWXB0SE8zRnlkRE5BMm4zVFBIVWJFallpYVRneGdGNmxHNVZkd2pfRmFpWC1CLWtPamppOXV5MVpGZFJKWVpB?oc=5" target="_blank" style="color: inherit; text-decoration: none;">雅虎香港新聞部解散：流量經濟和AI夾擊下，新聞業的困獸鬥 - 端傳媒Initium Media</a></h2>
+        </div>
+    
+
+        <div class="news-card">
+            <span class="tag">香港活動</span>
+            <h2><a href="https://news.google.com/rss/articles/CBMiXEFVX3lxTE9LQlJoWS12di1YT0F2bWVjWFNNdTBjY25FOV9Sd3V4T1luRko3My1TaFpYMXZVakFWR2VzcVRjOG1Rajg4cVNVa2NmdE0tZjd4Ny12ZkZaOWlJdHM5?oc=5" target="_blank" style="color: inherit; text-decoration: none;">盧廣仲 HeartBreakFast 傷心早餐店 世界巡迴 香港場 演唱會開場嘉賓公布 - 添翼</a></h2>
+        </div>
+    
+
+        <div class="news-card">
+            <span class="tag">香港活動</span>
+            <h2><a href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE9PRm5IbU9IRjBGbDc2ZnFxNzVMV3doWDE0QmVtTWZ2WVlhYzUtTXdXY0ozRmpQTHdTSnJUUzUwR0dSR1Vfc0RDUXdzNjVnT2Y1LVpF?oc=5" target="_blank" style="color: inherit; text-decoration: none;">香港秒殺演唱會搬來台北！Room307首次海外專場5月登場 - 中天新聞網</a></h2>
+        </div>
+    
+
+        <div class="news-card">
+            <span class="tag">香港活動</span>
+            <h2><a href="https://news.google.com/rss/articles/CBMi6wJBVV95cUxNcUo3ZEsyV1FRZk1EOFZOcFIwamdRN2tua0JHeGZiYVFiOTVfanFqcjRxYlUtMU1XdFVfYjVkTXd5TnhBOEFuUi1xbWg0R3ZVaVF1R3dqSVM5V3JXNEFGOUFRMUk5cjd6WjdmMUViVEtRTkkwVE1jdk1zd3JlSENiYlBqUTFTRVFXNW9EaktUNG8xaTJHaWxPMWFQV09sYVpMYVZILTZKV0FrdDlRbzJKVlc2NVhGZ1Bvc3J1cFMtNVpKd1JtWU5MQmg3ZWN3MVk3SGQzcHZSME1TUEQwU1ZhaGtIVTZWLUY4V0d5M1dkTUVOZHVfTEVTLWRCdng5RmdZNk44Tnc4aFc0Y0JkM004NXV5ajdIc21aaWZlNU9lQ0Q0cmltTzhzRTlnNk5wTEd3bmNPalE1OXE4ZndCU1dYVFRIMVc0OXFFT29DQTFxdWp1ZVVsak94SFZmNTlZZkp4ZENlNHN1c0l0OFU?oc=5" target="_blank" style="color: inherit; text-decoration: none;">鄭秀文香港演唱會2026｜Trip／優先＋公售攻略｜連結、座位表 - 香港01</a></h2>
+        </div>
+    
+
+        <div class="news-card">
+            <span class="tag">AI科技</span>
+            <h2><a href="https://news.google.com/rss/articles/CBMiiAFBVV95cUxQbVNTb0p4NjJUN2tSMlFLeHJseHVlZ244ZUU5VDBqTmFmRHRsZENwVDhIeE9xU3pvb1M0dkhqMGJpOXpEcXloM05lNnE5Qlhhc3JwYU5QLTNGeVNPUkhHU2FPRFVhREJxdHlfY0huZUNQaFd5X0hOcUpNQW1VSmJPaVpCajZIRkk5?oc=5" target="_blank" style="color: inherit; text-decoration: none;">我們協助照顧心理健康的最新進展 - blog.google</a></h2>
+        </div>
+    
+
+        <div class="news-card">
+            <span class="tag">AI科技</span>
+            <h2><a href="https://news.google.com/rss/articles/CBMidEFVX3lxTE9TaURTUWR6Skw1YnA2RWx2X1pEMFFwTTdLeGVfU1M0TVAtTWFPczVuNjYzTDNDSzRFRFlHaUVLOGlRVnFvOHhJYWgzNkh6VEE4Ujh2WU1HLTV5SlV1ZTlqRlgybmZvU0twZWZqS1RXUHRqRTYw?oc=5" target="_blank" style="color: inherit; text-decoration: none;">完整教學：用 Gemma 4、Ollama 和 OpenClaw 打造完全本地的 AI Agent（免費、零資料外洩） - 鏈新聞 ABMedia</a></h2>
+        </div>
+    
+
+        <div class="news-card">
+            <span class="tag">AI科技</span>
+            <h2><a href="https://news.google.com/rss/articles/CBMiZkFVX3lxTFBQRW4zMHhGZ2dhRkJBc0Q1c0k2U1NUWHVwM0JIOWd5ajQ5S2liMVM5SEU5SUVEUjRxSlVPWTNJNlhURGw2QXp5X3Z5d1dwQ2xJVGRGaU9kcGMzMHM2MEZrdUotOTRIZw?oc=5" target="_blank" style="color: inherit; text-decoration: none;">Google 悄推離線 AI 聽寫 App，中文版還得再等等 - TechNews 科技新報</a></h2>
+        </div>
+    
     </div>
-
     <script>
-        // 初始化 Telegram Web App
         const tg = window.Telegram.WebApp;
-        tg.expand(); // 展開全螢幕
-
-        // 設定今天日期
+        tg.expand();
         const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
         document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('zh-TW', options);
-
-        // 主題色適應 (通知 TG App 準備好了)
         tg.ready();
     </script>
 </body>

@@ -51,20 +51,14 @@ async function fetchGoogleNews(query, tag) {
     }
 }
 
-async function fetchReddit(subreddit, tag) {
+async function fetchGamingMovies() {
     try {
-        const url = `https://www.reddit.com/r/${subreddit}/top/.rss?t=day`;
-        const feed = await parser.parseURL(url);
-        return feed.items.slice(0, 3).map(item => ({
-            tag,
-            title: item.title,
-            link: item.link,
-            source: `Reddit (r/${subreddit})`,
-            image: extractImage(item)
-        }));
+        const gamingFeed = await fetchGoogleNews('電子遊戲 OR 電競 OR 遊戲主機', '遊戲情報');
+        const moviesFeed = await fetchGoogleNews('電影消息 OR 新片上映 OR 電影節', '電影消息');
+        return [...gamingFeed, ...moviesFeed];
     } catch (e) {
-        console.error(`Reddit Error (${subreddit}):`, e.message);
-        return [{ tag, title: `⚠️ 無法取得 ${tag} 資訊`, link: '#', source: '系統通知', error: true }];
+        console.error(`Gaming/Movies Error:`, e.message);
+        return [{ tag: '娛樂情報', title: `⚠️ 無法取得遊戲與電影資訊`, link: '#', source: '系統通知', error: true }];
     }
 }
 
@@ -76,8 +70,7 @@ async function main() {
         fetchGoogleNews('大角咀 OR 香港新聞', '大角咀/香港'),
         fetchGoogleNews('香港 (演唱會 OR 音樂節 OR Rave Party)', '香港活動'),
         fetchGoogleNews('AI Agent OR Google Gemini OR OpenClaw', 'AI科技'),
-        fetchReddit('gaming', '遊戲情報'),
-        fetchReddit('movies', '電影消息')
+        fetchGamingMovies()
     ]);
 
     results.forEach(res => news.push(...res));

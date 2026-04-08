@@ -20,9 +20,15 @@ function extractImage(item) {
     return imgMatch ? imgMatch[1] : null;
 }
 
-async function fetchNews(url, tag) {
+async function fetchNews(query, tag) {
     try {
-        const feed = await parser.parseURL(url);
+        const url = new URL('https://news.google.com/rss/search');
+        url.searchParams.append('q', query);
+        url.searchParams.append('hl', 'zh-TW');
+        url.searchParams.append('gl', 'TW');
+        url.searchParams.append('ceid', 'TW:zh-Hant');
+        
+        const feed = await parser.parseURL(url.toString());
         return feed.items.slice(0, 3).map(item => ({
             tag,
             title: item.title,
@@ -38,13 +44,13 @@ async function fetchNews(url, tag) {
 }
 
 async function main() {
+    console.log("Fetching real news with robust URL encoding...");
     const news = [];
+    
     const feeds = [
-        ['https://news.google.com/rss/search?q=大角咀+OR+香港新聞&hl=zh-TW&gl=TW&ceid=TW:zh-Hant', '大角咀/香港'],
-        ['https://news.google.com/rss/search?q=香港+演唱會+OR+音樂節+OR+Rave&hl=zh-TW&gl=TW&ceid=TW:zh-Hant', '香港活動'],
-        ['https://news.google.com/rss/search?q=AI+Agent+OR+Google+Gemini+OR+OpenClaw+AI&hl=zh-TW&gl=TW&ceid=TW:zh-Hant', 'AI科技'],
-        ['https://www.reddit.com/r/gaming/top/.rss?t=day', '娛樂情報'],
-        ['https://www.reddit.com/r/movies/top/.rss?t=day', '娛樂情報']
+        ['大角咀 OR 香港新聞', '大角咀/香港'],
+        ['香港 (演唱會 OR 音樂節 OR Rave Party)', '香港活動'],
+        ['AI Agent OR Google Gemini OR OpenClaw', 'AI科技']
     ];
 
     const results = await Promise.all(feeds.map(f => fetchNews(f[0], f[1])));
@@ -123,7 +129,7 @@ async function main() {
 </html>`;
 
     fs.writeFileSync(path.join(__dirname, 'index.html'), htmlTemplate);
-    console.log("index.html updated: Tabs, Modals, Truncated content.");
+    console.log("index.html updated successfully with robust URL encoding.");
 }
 
 main();

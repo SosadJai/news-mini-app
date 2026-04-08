@@ -4,11 +4,10 @@ const Parser = require('rss-parser');
 
 const parser = new Parser({
     customFields: {
-        item: ['media:content', 'description', 'source']
+        item: ['media:content', 'description', 'source', 'content']
     },
     headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 SAD_News_Bot/1.0',
-        'Accept': 'application/rss+xml, application/xml, text/xml'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
 });
 
@@ -18,47 +17,29 @@ function extractImage(item) {
     }
     const htmlContent = item.content || item.description || item.contentSnippet || '';
     const imgMatch = htmlContent.match(/<img[^>]+src="([^">]+)"/);
-    if (imgMatch) {
-        return imgMatch[1];
-    }
-    return null;
-}
-
-function getSource(item, defaultSource) {
-    if (item.source) return item.source;
-    try {
-        const url = new URL(item.link);
-        return url.hostname.replace('www.', '');
-    } catch(e) {
-        return defaultSource;
-    }
+    return imgMatch ? imgMatch[1] : null;
 }
 
 async function fetchGoogleNews(query, tag) {
     try {
-        const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant`;
-        const feed = await parser.parseURL(url);
+        const url = new URL('https://news.google.com/rss/search');
+        url.searchParams.append('q', query);
+        url.searchParams.append('hl', 'zh-TW');
+        url.searchParams.append('gl', 'TW');
+        url.searchParams.append('ceid', 'TW:zh-Hant');
+        
+        const feed = await parser.parseURL(url.toString());
         return feed.items.slice(0, 3).map(item => ({
             tag,
             title: item.title,
             link: item.link,
-            source: getSource(item, 'Google News'),
-            image: extractImage(item)
+            source: item.source || new URL(item.link).hostname.replace('www.', ''),
+            image: extractImage(item),
+            content: item.content || item.description || '無詳細內容'
         }));
     } catch (e) {
-        console.error(`Google News Error (${tag}):`, e.message);
-        return [{ tag, title: `⚠️ 無法取得 ${tag} 新聞`, link: '#', source: '系統通知', error: true }];
-    }
-}
-
-async function fetchGamingMovies() {
-    try {
-        const gamingFeed = await fetchGoogleNews('電子遊戲 OR 電競 OR 遊戲主機', '遊戲情報');
-        const moviesFeed = await fetchGoogleNews('電影消息 OR 新片上映 OR 電影節', '電影消息');
-        return [...gamingFeed, ...moviesFeed];
-    } catch (e) {
-        console.error(`Gaming/Movies Error:`, e.message);
-        return [{ tag: '娛樂情報', title: `⚠️ 無法取得遊戲與電影資訊`, link: '#', source: '系統通知', error: true }];
+        console.error(`Error fetching ${tag}:`, e.message);
+        return [{ tag, title: `⚠️ 無法取得 ${tag} 資訊`, content: '網路連線異常', error: true }];
     }
 }
 
@@ -69,62 +50,69 @@ async function main() {
     const results = await Promise.all([
         fetchGoogleNews('大角咀 OR 香港新聞', '大角咀/香港'),
         fetchGoogleNews('香港 (演唱會 OR 音樂節 OR Rave Party)', '香港活動'),
-        fetchGoogleNews('AI Agent OR Google Gemini OR OpenClaw', 'AI科技'),
-        fetchGamingMovies()
+        fetchGoogleNews('AI Agent OR Google Gemini OR OpenClaw', 'AI科技')
     ]);
 
     results.forEach(res => news.push(...res));
 
-    const htmlCards = news.map(n => {
-        const imgHtml = n.image && !n.error ? `<img src="${n.image}" alt="cover" style="width:100%; border-radius:8px; margin-bottom:12px; object-fit: cover; max-height: 200px;">` : '';
-        const sourceHtml = `<div style="font-size:12px; color:var(--tg-theme-hint-color, #888); margin-top:8px;">🗞️ 來源: ${n.source}</div>`;
-        return `
-        <div class="news-card">
-            <span class="tag">${n.tag}</span>
-            ${imgHtml}
-            <h2><a href="${n.link}" target="_blank" style="color: inherit; text-decoration: none;">${n.title}</a></h2>
-            ${sourceHtml}
-        </div>
-        `;
-    }).join('\n');
+    const groupedNews = news.reduce((acc, n) => {
+        if (!acc[n.tag]) acc[n.tag] = [];
+        acc[n.tag].push(n);
+        return acc;
+    }, {});
+
+    let htmlBody = '';
+    for (const tag in groupedNews) {
+        htmlBody += `<h2>${tag}</h2>`;
+        htmlBody += groupedNews[tag].map(n => `
+            <div class="news-card" onclick="openModal('${encodeURIComponent(n.title)}', '${encodeURIComponent(n.content)}')">
+                ${n.image && !n.error ? `<img src="${n.image}" alt="cover">` : ''}
+                <h3>${n.title}</h3>
+                <div class="source">🗞️ 來源: ${n.source}</div>
+            </div>
+        `).join('');
+    }
 
     const htmlTemplate = `<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAD News 晨報</title>
+    <title>SAD News</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--tg-theme-bg-color, #ffffff); color: var(--tg-theme-text-color, #000000); margin: 0; padding: 16px; transition: all 0.3s; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h1 { font-size: 24px; margin: 0; color: var(--tg-theme-text-color, #000); }
-        .date { font-size: 14px; color: var(--tg-theme-hint-color, #888); margin-top: 4px; }
-        .news-card { background-color: var(--tg-theme-secondary-bg-color, #f0f0f0); border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .news-card h2 { font-size: 16px; margin: 0 0 8px 0; line-height: 1.4; }
-        .tag { display: inline-block; background-color: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #ffffff); font-size: 12px; padding: 4px 8px; border-radius: 4px; margin-bottom: 12px; }
+        body { font-family: sans-serif; background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); margin: 0; padding: 16px; }
+        h2 { font-size: 20px; color: var(--tg-theme-hint-color); border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        .news-card { background: var(--tg-theme-secondary-bg-color); border-radius: 10px; padding: 12px; margin-bottom: 12px; cursor: pointer; }
+        .news-card img { width: 100%; border-radius: 8px; margin-bottom: 8px; }
+        .news-card h3 { font-size: 16px; margin: 0 0 4px 0; }
+        .source { font-size: 12px; color: var(--tg-theme-hint-color); }
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--tg-theme-bg-color); padding: 20px; box-sizing: border-box; overflow-y: auto; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>SAD News 晨報</h1>
-        <div class="date" id="dateDisplay">載入中...</div>
-    </div>
-    <div id="newsContainer">
-        ${htmlCards}
+    <h1>SAD News 晨報</h1>
+    <div id="newsContainer">${htmlBody}</div>
+    <div id="modal">
+        <button onclick="closeModal()">關閉</button>
+        <h2 id="modalTitle"></h2>
+        <div id="modalContent"></div>
     </div>
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-        document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('zh-TW', options);
-        tg.ready();
+        function openModal(title, content) {
+            document.getElementById('modalTitle').innerText = decodeURIComponent(title);
+            document.getElementById('modalContent').innerHTML = decodeURIComponent(content);
+            document.getElementById('modal').style.display = 'block';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
     </script>
 </body>
 </html>`;
 
     fs.writeFileSync(path.join(__dirname, 'index.html'), htmlTemplate);
-    console.log("index.html updated successfully with real news, images, and sources.");
+    console.log("index.html updated successfully.");
 }
 
 main();

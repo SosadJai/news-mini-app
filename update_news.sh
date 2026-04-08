@@ -4,7 +4,8 @@
 cd /Users/sadmca/.openclaw/workspace/projects/news-mini-app
 
 # 執行新聞抓取與 HTML 產生腳本
-node fetch_news.js
+# 確保使用正確的 node 路徑
+/usr/local/bin/node fetch_news.js
 
 # 自動提交並推送到 GitHub
 git add .

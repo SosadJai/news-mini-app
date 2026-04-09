@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/SosadJai/news-mini-app#readme",
   "dependencies": {
+    "openai": "^6.33.0",
     "rss-parser": "^3.13.0"
   }
 }
